@@ -12,7 +12,7 @@ Before installing, make sure these are available on each machine you'll use:
 
 | Tool | Why | Install |
 | --- | --- | --- |
-| [Bun](https://bun.sh) ≥ 1.x | Runtime + build tool | `brew install bun` |
+| Node.js ≥ 20 | Runtime for the CLI | `brew install node` |
 | `git` | Sync transport | usually pre-installed; `brew install git` |
 | [GitHub CLI](https://cli.github.com) (`gh`) | Easiest way to auth git over HTTPS | `brew install gh` |
 | [Claude Code](https://claude.com/claude-code) | The thing being managed | follow official install instructions |
@@ -30,17 +30,13 @@ This sets up a credential helper so subsequent `git clone`/`push`/`pull` against
 
 ## Install
 
-Not on npm yet — install from source:
-
 ```bash
-git clone https://github.com/somenameidc999/claude-hopper.git
-cd claude-hopper
-bun install
-bun run build
-npm i -g .
+npm install -g claude-hopper
 ```
 
-After this, both `claude-hopper` and the short alias `chp` are on your PATH.
+Both `claude-hopper` and the short alias `chp` land on your PATH.
+
+> **Building from source** (only needed if you're contributing): clone the repo, `bun install`, `bun run build`, `npm i -g .`.
 
 ---
 
@@ -232,7 +228,6 @@ Out of scope for v1:
 - Usage tracking (5h / 7d limits per profile)
 - Conflict resolution beyond fast-forward
 - TUI mode
-- Publishing to npm
 
 ---
 

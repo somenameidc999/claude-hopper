@@ -12,11 +12,20 @@
     "README.md",
     "LICENSE"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/somenameidc999/claude-hopper.git"
+  },
+  "homepage": "https://github.com/somenameidc999/claude-hopper#readme",
+  "bugs": {
+    "url": "https://github.com/somenameidc999/claude-hopper/issues"
+  },
   "scripts": {
     "build": "bun build src/cli.ts --target=node --outfile=dist/cli.js --banner=\"#!/usr/bin/env node\" && chmod +x dist/cli.js",
     "dev": "bun run src/cli.ts",
     "test": "bun test",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "bun run typecheck && bun test && bun run build"
   },
   "engines": {
     "node": ">=20"
