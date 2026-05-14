@@ -4,8 +4,8 @@
   "description": "Manage multiple isolated Claude Code profiles with cross-machine git sync",
   "type": "module",
   "bin": {
-    "claude-hopper": "./dist/cli.js",
-    "chp": "./dist/cli.js"
+    "claude-hopper": "dist/cli.js",
+    "chp": "dist/cli.js"
   },
   "files": [
     "dist",
