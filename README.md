@@ -1,8 +1,19 @@
 # claude-hopper
 
+[![npm version](https://img.shields.io/npm/v/claude-hopper.svg)](https://www.npmjs.com/package/claude-hopper)
+[![npm downloads](https://img.shields.io/npm/dm/claude-hopper.svg)](https://www.npmjs.com/package/claude-hopper)
+[![license](https://img.shields.io/npm/l/claude-hopper.svg)](./LICENSE)
+
 Manage multiple isolated Claude Code profiles — personal, work, contractor, whatever — and sync the non-secret parts across machines via git.
 
 Each profile is a fully independent copy of Claude Code config. Different OAuth, different settings, different agents, different skills. One alias per profile (`claude-personal`, `claude-lazer`, ...) drops you into the right one.
+
+```bash
+npm install -g claude-hopper
+claude-hopper init --remote https://github.com/<you>/<sync-repo>.git
+claude-hopper profile add personal --seed canonical
+source ~/.zshrc && claude-personal
+```
 
 ---
 
