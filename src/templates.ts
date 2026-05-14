@@ -20,9 +20,6 @@ profiles/*/plugins/installed/
 profiles/*/settings.local.json
 profiles/*/paste-cache/
 
-# Legacy jean-claude metadata that may sneak in via --seed canonical.
-profiles/*/.jean-claude/
-
 # Defensive: any per-machine hopper state that ever lands inside the dir.
 .last-active.json
 .sync-state.json

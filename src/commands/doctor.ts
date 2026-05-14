@@ -208,7 +208,6 @@ async function scanForForeignAbsolute(dir: string): Promise<{ hard: string[]; so
             "locks",
             "shell-snapshots",
             "paste-cache",
-            ".jean-claude",
             "marketplaces",
             "installed",
           ].includes(e.name)

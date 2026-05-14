@@ -139,7 +139,6 @@ Sync uses your own git remote (GitHub, GitLab, self-hosted — whatever).
 | `plugins/known_marketplaces.json`, `plugins/marketplaces/`, `plugins/installed/` | Per-machine plugin install paths |
 | `paste-cache/` | Clipboard cache |
 | `statsig/`, `cache/`, `locks/`, `shell-snapshots/`, `*.log` | Per-machine runtime state |
-| `.jean-claude/` | Legacy metadata from the jean-claude tool, if present |
 
 You'll need to authenticate each profile on each machine — `claude-hopper` does not handle OAuth.
 
@@ -181,7 +180,7 @@ Profile-name prefix matching is supported: `claude-hopper run p` is fine if it's
 
 **`doctor` says `Alias in ~/.zshrc ✗ missing`** — `claude-hopper profile alias-install <name>`, then `source ~/.zshrc`.
 
-**`doctor` shows `No foreign absolute paths (config/code) ✗`** — one of your tracked config files contains a path like `/Users/someone-else/...`. Open the listed file and replace with a portable reference (e.g. `~/...`). This is the #1 jean-claude failure mode the doctor is built to catch.
+**`doctor` shows `No foreign absolute paths (config/code) ✗`** — one of your tracked config files contains a path like `/Users/someone-else/...`. Open the listed file and replace with a portable reference (e.g. `~/...`). This is the single most common cross-machine sync failure mode, and the doctor is built to catch it before the bad data hits your remote.
 
 **`doctor` shows `No foreign absolute paths (docs) ⚠`** — a markdown file in a skill contains an example path like `/Users/me/...`. This is a warning, not a failure; push will still succeed. If you want it clean, edit the doc to use a placeholder like `<your-home>/...`.
 
