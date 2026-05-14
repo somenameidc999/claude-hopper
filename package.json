@@ -1,0 +1,41 @@
+{
+  "name": "claude-hopper",
+  "version": "0.1.0",
+  "description": "Manage multiple isolated Claude Code profiles with cross-machine git sync",
+  "type": "module",
+  "bin": {
+    "claude-hopper": "./dist/cli.js",
+    "chp": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun build src/cli.ts --target=node --outfile=dist/cli.js --banner=\"#!/usr/bin/env node\" && chmod +x dist/cli.js",
+    "dev": "bun run src/cli.ts",
+    "test": "bun test",
+    "typecheck": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "picocolors": "^1.1.1",
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.14",
+    "@types/prompts": "^2.4.9",
+    "typescript": "^5.7.2"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "cli",
+    "profiles"
+  ],
+  "license": "MIT"
+}
