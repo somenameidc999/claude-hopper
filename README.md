@@ -2,7 +2,7 @@
 
 Manage multiple isolated Claude Code profiles — personal, work, contractor, whatever — and sync the non-secret parts across machines via git.
 
-Each profile is a fully independent copy of Claude Code config. Different OAuth, different settings, different agents, different skills. One alias per profile (`claude-personal`, `claude-lazer`, ...) drops you into the right one.
+Each profile is a fully independent copy of Claude Code config. Different OAuth, different settings, different agents, different skills. One alias per profile (`claude-personal`, `claude-work`, ...) drops you into the right one.
 
 ---
 
@@ -14,14 +14,14 @@ npm install -g claude-hopper
 # On your first machine:
 claude-hopper init --remote git@github.com:you/claude-hopper-sync.git
 claude-hopper profile add personal --seed canonical   # copy from ~/.claude
-claude-hopper profile add lazer --seed empty
+claude-hopper profile add work --seed empty
 claude-hopper sync push
 
 # On a fresh second machine:
 claude-hopper init --remote git@github.com:you/claude-hopper-sync.git
 # Profiles are now materialized. Authenticate each one:
 claude-personal              # OAuth in browser
-claude-lazer                 # OAuth in browser (sign out of claude.ai first or use incognito)
+claude-work                 # OAuth in browser (sign out of claude.ai first or use incognito)
 ```
 
 `claude-hopper` and `chp` are both wired as bin names — use whichever you prefer.
@@ -33,7 +33,7 @@ claude-lazer                 # OAuth in browser (sign out of claude.ai first or 
 Every profile lives at `~/.claude-hopper/profiles/<name>/` and is a complete, standalone Claude Code config dir:
 
 ```
-~/.claude-hopper/profiles/lazer/
+~/.claude-hopper/profiles/work/
   settings.json
   CLAUDE.md
   agents/
@@ -93,7 +93,7 @@ Sync is **explicit**: `claude-hopper sync push`, `claude-hopper sync pull`, `cla
 | `claude-hopper sync status` | Show ahead/behind, uncommitted files, last push/pull. |
 | `claude-hopper uninstall` | Remove `~/.claude-hopper` and all aliases. Leaves `~/.claude` untouched. |
 
-Most commands accept `--json` for machine-readable output. `run` accepts any args and passes them through to `claude` (e.g. `claude-hopper run lazer --resume`).
+Most commands accept `--json` for machine-readable output. `run` accepts any args and passes them through to `claude` (e.g. `claude-hopper run work --resume`).
 
 Profile-name prefix matching is supported: `claude-hopper run l` is fine if it's unambiguous.
 
@@ -132,9 +132,9 @@ Profile-name prefix matching is supported: `claude-hopper run l` is fine if it's
 1. `claude-hopper init` creates `~/.claude-hopper/` (and optionally git-inits it with your remote).
 2. `profile add <name>` makes `~/.claude-hopper/profiles/<name>/`, seeds it from your chosen source (`~/.claude`, another profile, or empty), and writes a marker-fenced alias into your shell rc file:
    ```bash
-   # >>> claude-hopper: lazer >>>
-   alias claude-lazer='CLAUDE_CONFIG_DIR="$HOME/.claude-hopper/profiles/lazer" command claude'
-   # <<< claude-hopper: lazer <<<
+   # >>> claude-hopper: work >>>
+   alias claude-work='CLAUDE_CONFIG_DIR="$HOME/.claude-hopper/profiles/work" command claude'
+   # <<< claude-hopper: work <<<
    ```
 3. The alias uses `$HOME`, never a hard-coded absolute path. The marker comments let `alias-remove` and `uninstall` clean up cleanly years later.
 4. `sync push` commits everything except secrets/per-machine-state (governed by `.gitignore`) and pushes. `sync pull` fast-forwards and then runs `doctor --repair` to (re)install aliases for any profiles that appeared in the pull.

@@ -21,7 +21,7 @@ afterEach(async () => {
 describe("config", () => {
   test("validateProfileName accepts good names, rejects bad", async () => {
     const { validateProfileName } = await import("../src/config.ts");
-    expect(() => validateProfileName("lazer")).not.toThrow();
+    expect(() => validateProfileName("work")).not.toThrow();
     expect(() => validateProfileName("contract-2")).not.toThrow();
     expect(() => validateProfileName("a_b_c")).not.toThrow();
 
@@ -51,10 +51,10 @@ describe("config", () => {
     const cfgMod = await import("../src/config.ts");
     const cfg = cfgMod.defaultConfig();
     cfg.profiles.push({
-      name: "lazer",
+      name: "work",
       createdAt: new Date().toISOString(),
       seedSource: "empty",
-      shell: { alias: "claude-lazer" },
+      shell: { alias: "claude-work" },
     });
     cfg.shell.rcFile = "~/.zshrc";
     await cfgMod.saveConfig(cfg);
@@ -76,11 +76,11 @@ describe("config", () => {
     const { resolveProfileName, defaultConfig } = await import("../src/config.ts");
     const cfg = defaultConfig();
     cfg.profiles.push(
-      { name: "lazer", createdAt: "x", seedSource: "empty", shell: { alias: "claude-lazer" } },
+      { name: "work", createdAt: "x", seedSource: "empty", shell: { alias: "claude-work" } },
       { name: "contract", createdAt: "x", seedSource: "empty", shell: { alias: "claude-contract" } },
     );
-    expect(resolveProfileName(cfg, "lazer").name).toBe("lazer");
-    expect(resolveProfileName(cfg, "la").name).toBe("lazer");
+    expect(resolveProfileName(cfg, "work").name).toBe("work");
+    expect(resolveProfileName(cfg, "w").name).toBe("work");
     expect(resolveProfileName(cfg, "c").name).toBe("contract");
     expect(() => resolveProfileName(cfg, "nope")).toThrow(/No profile/);
   });
@@ -89,9 +89,9 @@ describe("config", () => {
     const { resolveProfileName, defaultConfig } = await import("../src/config.ts");
     const cfg = defaultConfig();
     cfg.profiles.push(
-      { name: "lazer", createdAt: "x", seedSource: "empty", shell: { alias: "claude-lazer" } },
-      { name: "lab", createdAt: "x", seedSource: "empty", shell: { alias: "claude-lab" } },
+      { name: "work", createdAt: "x", seedSource: "empty", shell: { alias: "claude-work" } },
+      { name: "weekend", createdAt: "x", seedSource: "empty", shell: { alias: "claude-weekend" } },
     );
-    expect(() => resolveProfileName(cfg, "la")).toThrow(/ambiguous/);
+    expect(() => resolveProfileName(cfg, "w")).toThrow(/ambiguous/);
   });
 });

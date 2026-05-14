@@ -69,13 +69,13 @@ describe("sync round-trip", () => {
     // Machine A: init with bare repo as remote, add profiles, push.
     await withHome(homeA, async () => {
       await runInit({ remote: bareRepo, yes: true });
-      await runProfileAdd("lazer", { seed: "empty", yes: true });
+      await runProfileAdd("work", { seed: "empty", yes: true });
       await runProfileAdd("contract", { seed: "empty", yes: true });
-      // Put a tracked file in lazer.
-      await writeFile(join(profileDir("lazer"), "settings.json"), '{"theme":"dark"}\n');
-      await writeFile(join(profileDir("lazer"), "CLAUDE.md"), "# lazer instructions\n");
+      // Put a tracked file in work.
+      await writeFile(join(profileDir("work"), "settings.json"), '{"theme":"dark"}\n');
+      await writeFile(join(profileDir("work"), "CLAUDE.md"), "# work instructions\n");
       // Drop a credential file that should NOT be synced.
-      await writeFile(join(profileDir("lazer"), ".credentials.json"), "MACHINE-A-SECRET");
+      await writeFile(join(profileDir("work"), ".credentials.json"), "MACHINE-A-SECRET");
       await runSyncPush({ force: false });
     });
 
@@ -85,18 +85,18 @@ describe("sync round-trip", () => {
 
       const { loadConfig } = await import("../src/config.ts");
       const cfg = await loadConfig();
-      expect(cfg.profiles.map((p) => p.name).sort()).toEqual(["contract", "lazer"]);
+      expect(cfg.profiles.map((p) => p.name).sort()).toEqual(["contract", "work"]);
 
       // Profile dirs exist.
-      const lazerStat = await stat(profileDir("lazer"));
-      expect(lazerStat.isDirectory()).toBe(true);
+      const workStat = await stat(profileDir("work"));
+      expect(workStat.isDirectory()).toBe(true);
 
       // Tracked file came through.
-      const settings = await readFile(join(profileDir("lazer"), "settings.json"), "utf8");
+      const settings = await readFile(join(profileDir("work"), "settings.json"), "utf8");
       expect(settings).toBe('{"theme":"dark"}\n');
 
       // Credentials did NOT come through.
-      const credExists = await stat(join(profileDir("lazer"), ".credentials.json")).then(
+      const credExists = await stat(join(profileDir("work"), ".credentials.json")).then(
         () => true,
         () => false,
       );
@@ -104,11 +104,11 @@ describe("sync round-trip", () => {
 
       // Alias was installed for both profiles.
       const rc = await readFile(join(homeB, ".zshrc"), "utf8");
-      expect(rc).toContain("claude-hopper: lazer");
+      expect(rc).toContain("claude-hopper: work");
       expect(rc).toContain("claude-hopper: contract");
       // And points at $HOME, not the machine A home.
       expect(rc).not.toContain(homeA);
-      expect(rc).toContain("$HOME/.claude-hopper/profiles/lazer");
+      expect(rc).toContain("$HOME/.claude-hopper/profiles/work");
 
       // Another pull is a no-op.
       await runSyncPull({});
@@ -147,14 +147,14 @@ describe("sync round-trip", () => {
 
     await withHome(homeA, async () => {
       await runInit({ remote: bareRepo, yes: true });
-      await runProfileAdd("lazer", { seed: "empty", yes: true });
+      await runProfileAdd("work", { seed: "empty", yes: true });
       await runSyncPush({});
     });
 
     await withHome(homeB, async () => {
       await runInit({ remote: bareRepo, yes: true });
       // Make B dirty.
-      await writeFile(join(profileDir("lazer"), "dirty.txt"), "uncommitted");
+      await writeFile(join(profileDir("work"), "dirty.txt"), "uncommitted");
       await expect(runSyncPull({})).rejects.toThrow(/overwritten|Local changes/i);
       await runSyncPull({ discard: true });
     });
