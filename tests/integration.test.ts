@@ -65,14 +65,14 @@ describe("init + profile lifecycle (no sync)", () => {
   test("profile add --seed empty creates dir, registers alias, no absolute paths", async () => {
     const { init, add, config, paths } = await freshModules();
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
 
     const cfg = await config.loadConfig();
     expect(cfg.profiles).toHaveLength(1);
-    expect(cfg.profiles[0]!.name).toBe("lazer");
-    expect(cfg.profiles[0]!.shell.alias).toBe("claude-lazer");
+    expect(cfg.profiles[0]!.name).toBe("work");
+    expect(cfg.profiles[0]!.shell.alias).toBe("claude-work");
 
-    const s = await stat(paths.profileDir("lazer"));
+    const s = await stat(paths.profileDir("work"));
     expect(s.isDirectory()).toBe(true);
 
     const cfgText = await readFile(paths.configPath(), "utf8");
@@ -80,29 +80,29 @@ describe("init + profile lifecycle (no sync)", () => {
     expect(cfgText).not.toMatch(/\/home\//);
 
     const rc = await readFile(join(tmpHome, ".zshrc"), "utf8");
-    expect(rc).toContain(">>> claude-hopper: lazer >>>");
-    expect(rc).toContain('$HOME/.claude-hopper/profiles/lazer');
+    expect(rc).toContain(">>> claude-hopper: work >>>");
+    expect(rc).toContain('$HOME/.claude-hopper/profiles/work');
     expect(rc).not.toContain(tmpHome);
   });
 
   test("profile add rejects duplicate names", async () => {
     const { init, add } = await freshModules();
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
-    await expect(add.runProfileAdd("lazer", { seed: "empty", yes: true })).rejects.toThrow(/already exists/);
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
+    await expect(add.runProfileAdd("work", { seed: "empty", yes: true })).rejects.toThrow(/already exists/);
   });
 
   test("profile clone copies files but excludes secrets", async () => {
     const { init, add, clone, paths } = await freshModules();
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
-    // Put a non-secret file and a secret in lazer.
-    await writeFile(join(paths.profileDir("lazer"), "settings.json"), '{"foo":"bar"}\n');
-    await writeFile(join(paths.profileDir("lazer"), ".credentials.json"), 'SECRET');
-    await mkdir(join(paths.profileDir("lazer"), "projects"), { recursive: true });
-    await writeFile(join(paths.profileDir("lazer"), "projects", "p.json"), 'machine-state');
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
+    // Put a non-secret file and a secret in work.
+    await writeFile(join(paths.profileDir("work"), "settings.json"), '{"foo":"bar"}\n');
+    await writeFile(join(paths.profileDir("work"), ".credentials.json"), 'SECRET');
+    await mkdir(join(paths.profileDir("work"), "projects"), { recursive: true });
+    await writeFile(join(paths.profileDir("work"), "projects", "p.json"), 'machine-state');
 
-    await clone.runProfileClone("lazer", "contract", { yes: true });
+    await clone.runProfileClone("work", "contract", { yes: true });
 
     const settings = await readFile(join(paths.profileDir("contract"), "settings.json"), "utf8");
     expect(settings).toBe('{"foo":"bar"}\n');
@@ -125,25 +125,25 @@ describe("init + profile lifecycle (no sync)", () => {
   test("profile remove deletes dir, registry, and alias", async () => {
     const { init, add, remove, config, paths } = await freshModules();
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
-    await remove.runProfileRemove("lazer", { yes: true });
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
+    await remove.runProfileRemove("work", { yes: true });
 
     const cfg = await config.loadConfig();
     expect(cfg.profiles).toHaveLength(0);
 
-    const dirGone = await stat(paths.profileDir("lazer")).then(() => false, () => true);
+    const dirGone = await stat(paths.profileDir("work")).then(() => false, () => true);
     expect(dirGone).toBe(true);
 
     const rc = await readFile(join(tmpHome, ".zshrc"), "utf8");
-    expect(rc).not.toContain("claude-hopper: lazer");
+    expect(rc).not.toContain("claude-hopper: work");
   });
 
   test("profile remove --keep-files preserves the directory", async () => {
     const { init, add, remove, paths } = await freshModules();
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
-    await remove.runProfileRemove("lazer", { yes: true, keepFiles: true });
-    const s = await stat(paths.profileDir("lazer"));
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
+    await remove.runProfileRemove("work", { yes: true, keepFiles: true });
+    const s = await stat(paths.profileDir("work"));
     expect(s.isDirectory()).toBe(true);
   });
 
@@ -151,7 +151,7 @@ describe("init + profile lifecycle (no sync)", () => {
     const { init, add, doctor, logger } = await freshModules();
     logger.setJsonMode(true); // suppress output
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
     const report = await doctor.runDoctor({ silent: true });
     logger.setJsonMode(false);
     expect(report.hasFailures).toBe(false);
@@ -161,8 +161,8 @@ describe("init + profile lifecycle (no sync)", () => {
     const { init, add, doctor, paths, logger } = await freshModules();
     logger.setJsonMode(true);
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
-    await rm(paths.profileDir("lazer"), { recursive: true, force: true });
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
+    await rm(paths.profileDir("work"), { recursive: true, force: true });
 
     const before = await doctor.runDoctor({ silent: true });
     expect(before.hasFailures).toBe(true);
@@ -177,7 +177,7 @@ describe("init + profile lifecycle (no sync)", () => {
     const { init, add, doctor, logger } = await freshModules();
     logger.setJsonMode(true);
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
 
     // Manually nuke the alias block.
     const rcPath = join(tmpHome, ".zshrc");
@@ -188,7 +188,7 @@ describe("init + profile lifecycle (no sync)", () => {
 
     await doctor.runDoctor({ repair: true, silent: true });
     const rc = await readFile(rcPath, "utf8");
-    expect(rc).toContain("claude-hopper: lazer");
+    expect(rc).toContain("claude-hopper: work");
 
     const after = await doctor.runDoctor({ silent: true });
     logger.setJsonMode(false);
@@ -199,9 +199,9 @@ describe("init + profile lifecycle (no sync)", () => {
     const { init, add, doctor, paths, logger } = await freshModules();
     logger.setJsonMode(true);
     await init.runInit({ noSync: true, yes: true });
-    await add.runProfileAdd("lazer", { seed: "empty", yes: true });
+    await add.runProfileAdd("work", { seed: "empty", yes: true });
     await writeFile(
-      join(paths.profileDir("lazer"), "settings.json"),
+      join(paths.profileDir("work"), "settings.json"),
       JSON.stringify({ note: "from /Users/somebody-else/.claude" }),
     );
     const report = await doctor.runDoctor({ silent: true });

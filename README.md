@@ -6,7 +6,7 @@
 
 Manage multiple isolated Claude Code profiles — personal, work, contractor, whatever — and sync the non-secret parts across machines via git.
 
-Each profile is a fully independent copy of Claude Code config. Different OAuth, different settings, different agents, different skills. One alias per profile (`claude-personal`, `claude-lazer`, ...) drops you into the right one.
+Each profile is a fully independent copy of Claude Code config. Different OAuth, different settings, different agents, different skills. One alias per profile (`claude-personal`, `claude-work`, ...) drops you into the right one.
 
 ```bash
 npm install -g claude-hopper
