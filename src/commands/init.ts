@@ -149,7 +149,24 @@ async function setupGitSync(remote: string): Promise<void> {
     cwd: process.cwd(),
     allowFail: true,
   });
-  const hasContent = probe.code === 0 && probe.stdout.trim().length > 0;
+  if (probe.code !== 0) {
+    // Auth failure, unreachable host, or a permissions issue. Surface it —
+    // do NOT silently fall through to fresh-init, because that masks the
+    // problem and leaves the user with empty profiles when they expected
+    // a clone of their sync repo.
+    const stderr = probe.stderr.trim();
+    const looksLikeAuth = /permission denied|publickey|could not read from remote|authentication failed/i.test(
+      stderr,
+    );
+    throw new HopperError(
+      `Cannot reach git remote ${remote}: ${stderr}`,
+      looksLikeAuth
+        ? `Set up auth for this remote first. Easiest path: \`gh auth login\` (pick HTTPS) and re-run with the https:// URL. For SSH, register a key with \`gh ssh-key add ~/.ssh/id_ed25519.pub\` (generate one with \`ssh-keygen -t ed25519\` if needed).`
+        : `Verify the remote URL is correct and you have network access. If the repo is private, set up auth (\`gh auth login\` for HTTPS, or an SSH key for SSH URLs).`,
+      "GIT_REMOTE_PROBE_FAILED",
+    );
+  }
+  const hasContent = probe.stdout.trim().length > 0;
 
   if (hasContent) {
     log.step("Remote has content — cloning into the hopper dir…");

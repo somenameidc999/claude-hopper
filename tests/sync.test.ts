@@ -117,6 +117,25 @@ describe("sync round-trip", () => {
     setJsonMode(false);
   });
 
+  test("init surfaces a clear error when the remote is unreachable", async () => {
+    const { runInit } = await import("../src/commands/init.ts");
+    const { setJsonMode } = await import("../src/logger.ts");
+
+    setJsonMode(true);
+
+    // Point at a path that exists but is not a git repo. ls-remote should
+    // fail with a non-zero exit code, and init should refuse to fall back
+    // to a fresh init.
+    const bogusRemote = "/nonexistent/path/to/no-repo-here.git";
+    await withHome(homeA, async () => {
+      await expect(runInit({ remote: bogusRemote, yes: true })).rejects.toThrow(
+        /Cannot reach git remote/i,
+      );
+    });
+
+    setJsonMode(false);
+  });
+
   test("pull refuses dirty tree without --discard", async () => {
     const { runInit } = await import("../src/commands/init.ts");
     const { runProfileAdd } = await import("../src/commands/profile-add.ts");
