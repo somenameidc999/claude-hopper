@@ -20,7 +20,6 @@ export const EXCLUDED_PREFIXES = [
   "locks",
   "cache",
   "shell-snapshots",
-  ".jean-claude",
   "plugins/marketplaces",
   "plugins/installed",
   "paste-cache",
