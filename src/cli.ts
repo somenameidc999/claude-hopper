@@ -8,6 +8,7 @@ import { runProfileRemove } from "./commands/profile-remove.ts";
 import { runProfileClone } from "./commands/profile-clone.ts";
 import { runAliasInstall, runAliasRemove } from "./commands/profile-alias.ts";
 import { runRun } from "./commands/run.ts";
+import { runAppInstall, runAppList, runAppRemove } from "./commands/app.ts";
 import { runDoctor } from "./commands/doctor.ts";
 import { runSyncPull, runSyncPush, runSyncStatus } from "./commands/sync.ts";
 import { runUninstall } from "./commands/uninstall.ts";
@@ -33,6 +34,11 @@ function normalizeArgv(argv: string[]): string[] {
     "profile clone",
     "profile alias-install",
     "profile alias-remove",
+    "app install",
+    "app remove",
+    "app rm",
+    "app list",
+    "app ls",
     "sync push",
     "sync pull",
     "sync status",
@@ -140,6 +146,32 @@ async function main() {
       const passthrough = Array.isArray(args) ? args : [];
       const code = await runRun(name, passthrough);
       process.exit(code);
+    });
+
+  cli
+    .command("app-install [name]", "Create a macOS .app for a profile (all profiles if no name)")
+    .option("--json", "Machine-readable output")
+    .action(async (name, opts) => {
+      applyJsonFlag(opts);
+      await runAppInstall(name, { json: opts.json });
+    });
+
+  cli
+    .command("app-remove [name]", "Remove the macOS .app for a profile (all profiles if no name)")
+    .alias("app-rm")
+    .option("--json", "Machine-readable output")
+    .action(async (name, opts) => {
+      applyJsonFlag(opts);
+      await runAppRemove(name, { json: opts.json });
+    });
+
+  cli
+    .command("app-list", "List profiles and whether their macOS .app is installed")
+    .alias("app-ls")
+    .option("--json", "Machine-readable output")
+    .action(async (opts) => {
+      applyJsonFlag(opts);
+      await runAppList({ json: opts.json });
     });
 
   cli

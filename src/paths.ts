@@ -39,6 +39,27 @@ export function canonicalClaudeDir(): string {
   return join(home(), ".claude");
 }
 
+/** Per-user Applications folder. Writable without sudo; Finder/Spotlight index it. */
+export function appsDir(): string {
+  return join(home(), "Applications");
+}
+
+export function appBundleName(profileName: string): string {
+  return `Claude ${profileName}.app`;
+}
+
+export function appBundlePath(profileName: string): string {
+  return join(appsDir(), appBundleName(profileName));
+}
+
+/**
+ * Reverse-DNS bundle identifier. Profile names are validated to
+ * `[A-Za-z0-9_-]`; `_` is not conventional in bundle IDs so map it to `-`.
+ */
+export function appBundleIdentifier(profileName: string): string {
+  return `com.claude-hopper.${profileName.replace(/_/g, "-")}`;
+}
+
 export function stateDir(): string {
   return join(home(), ".local", "state", "claude-hopper");
 }

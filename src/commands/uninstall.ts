@@ -3,6 +3,7 @@ import { loadConfigOrDefault } from "../config.ts";
 import { hopperDir, stateDir, tildify } from "../paths.ts";
 import { pathExists, removePath } from "../fs.ts";
 import { removeAlias } from "../shell.ts";
+import { removeApp } from "../macapp.ts";
 import * as log from "../logger.ts";
 
 export interface UninstallFlags {
@@ -30,6 +31,15 @@ export async function runUninstall(flags: UninstallFlags): Promise<void> {
     for (const p of cfg.profiles) {
       const { changed } = await removeAlias(cfg.shell.rcFile, p.name);
       if (changed) log.info(`Removed alias for "${p.name}" from ${cfg.shell.rcFile}.`);
+    }
+  }
+
+  for (const p of cfg.profiles) {
+    try {
+      const { changed } = await removeApp(p.name);
+      if (changed) log.info(`Removed Mac app for "${p.name}".`);
+    } catch (e) {
+      log.warn((e as Error).message);
     }
   }
 

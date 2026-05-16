@@ -1,6 +1,7 @@
 import prompts from "prompts";
 import { loadConfig, resolveProfileName, saveConfig } from "../config.ts";
 import { removeAlias } from "../shell.ts";
+import { removeApp } from "../macapp.ts";
 import { removeProfileDir } from "../profile.ts";
 import * as log from "../logger.ts";
 
@@ -36,6 +37,15 @@ export async function runProfileRemove(name: string, flags: RemoveFlags): Promis
   if (cfg.shell.rcFile) {
     const { changed } = await removeAlias(cfg.shell.rcFile, target.name);
     if (changed) log.info(`Removed alias block from ${cfg.shell.rcFile}.`);
+  }
+
+  // Best-effort: drop the macOS .app if we created one. A no-op off macOS
+  // or when no bundle exists; never block profile removal on it.
+  try {
+    const { changed } = await removeApp(target.name);
+    if (changed) log.info(`Removed Mac app for "${target.name}".`);
+  } catch (e) {
+    log.warn((e as Error).message);
   }
 
   cfg.profiles = cfg.profiles.filter((p) => p.name !== target.name);

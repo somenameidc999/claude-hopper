@@ -129,6 +129,43 @@ The `claude-<name>` alias just sets `CLAUDE_CONFIG_DIR` and execs Claude Code. T
 
 ---
 
+## Mac apps (one clickable app per profile)
+
+On macOS you can generate a standalone `.app` for each profile, so a
+profile is reachable from Spotlight, the Dock, or `~/Applications` — not
+just a shell alias.
+
+```bash
+claude-hopper app install            # one app per profile
+claude-hopper app install work       # or just one profile
+claude-hopper app list               # which profiles have an app
+claude-hopper app remove work        # delete a profile's app
+```
+
+`app install` (no name) creates `~/Applications/Claude <name>.app` for
+every profile — run it once after adding your profiles and you'll have a
+separate Mac app for each Claude account.
+
+Each app works exactly like the `claude-<name>` alias: double-clicking it
+opens a Terminal window running `claude` with `CLAUDE_CONFIG_DIR` pointed
+at that profile. The launcher uses `$HOME`, never a hard-coded path, so the
+bundle is identical on every Mac (nothing machine-specific is baked in).
+
+Notes:
+
+- macOS only. On other platforms the command exits with a clear message —
+  use the shell alias or `claude-hopper run <name>` instead.
+- Apps are a **per-machine** artifact (like the shell alias) and are
+  **not** synced through the git remote. Run `claude-hopper app install`
+  once on each Mac where you want clickable apps.
+- `profile remove` and `uninstall` clean up the matching app bundle
+  automatically. Bundles created by something other than claude-hopper are
+  never overwritten or deleted.
+- First launch may prompt for Terminal automation permission (macOS
+  asks once per app, then remembers).
+
+---
+
 ## Cross-machine sync
 
 Sync uses your own git remote (GitHub, GitLab, self-hosted — whatever).
@@ -165,6 +202,9 @@ Sync is **explicit**: `claude-hopper sync push`, `claude-hopper sync pull`, `cla
 | `claude-hopper profile alias-install <name>` | (Re)install the shell alias for a profile. |
 | `claude-hopper profile alias-remove <name>` | Remove just the shell alias. |
 | `claude-hopper run <name> [...args]` | Launch Claude Code with the profile (or use the `claude-<name>` alias). |
+| `claude-hopper app install [name]` | macOS: create a clickable `.app` for a profile (all profiles if no name). |
+| `claude-hopper app list` | macOS: show which profiles have an `.app` installed. |
+| `claude-hopper app remove [name]` | macOS: delete a profile's `.app` (all profiles if no name). |
 | `claude-hopper doctor [--repair] [--profile <name>]` | Health-check profiles. `--repair` fixes what it can. |
 | `claude-hopper sync push [--message <m>] [--force]` | Stage, commit, push. Doctor-gated unless `--force`. |
 | `claude-hopper sync pull [--discard] [--no-repair]` | Fast-forward pull, then `doctor --repair` to fix local aliases. |
