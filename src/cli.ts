@@ -9,6 +9,7 @@ import { runProfileClone } from "./commands/profile-clone.ts";
 import { runAliasInstall, runAliasRemove } from "./commands/profile-alias.ts";
 import { runRun } from "./commands/run.ts";
 import { runDoctor } from "./commands/doctor.ts";
+import { runRefreshFlags } from "./commands/refresh-flags.ts";
 import { runSyncPull, runSyncPush, runSyncStatus } from "./commands/sync.ts";
 import { runUninstall } from "./commands/uninstall.ts";
 
@@ -158,6 +159,20 @@ async function main() {
       });
       if (report.hasFailures) process.exit(1);
       if (opts.strict && report.hasWarnings) process.exit(2);
+    });
+
+  cli
+    .command("refresh-flags", "Refetch each profile's Claude feature flags")
+    .option("--profile <name>", "Refresh only a single profile")
+    .option("--lazy", "Just invalidate the cache; refetch on next launch (no API call)")
+    .option("--json", "Machine-readable output")
+    .action(async (opts) => {
+      applyJsonFlag(opts);
+      await runRefreshFlags({
+        profile: opts.profile,
+        lazy: opts.lazy,
+        json: opts.json,
+      });
     });
 
   cli
